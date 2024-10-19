@@ -1,9 +1,61 @@
 import langgraph as lg
-
 import torch
 import tarfile
+import os
+import requests
+from dotenv import load_dotenv
+from PIL import Image
+import numpy as np
+import clip
+import requests
+from requests.exceptions import ConnectionError
+from langchain_core.messages import HumanMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+import base64, io
+from PIL import Image
+import base64
+from langchain.schema import HumanMessage
+from langchain.llms import GooglePalm
+from langchain_core.messages import HumanMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+import base64, httpx
+from langchain_core.retrievers import BaseRetriever, RetrieverOutput
+from langchain_core.runnables import Runnable, RunnablePassthrough
+from PIL import Image
+import base64
+import io
+import json
 
 
+# Load environment variables
+load_dotenv()
+
+# Your Gemini API key from .env
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+def encode_image(image_path: str) -> str:
+    # Debugging: Print the image path to ensure it's correct
+    print(f"Attempting to open image at path: {image_path}")
+
+    try:
+        # Open the image from the file path
+        image = Image.open(image_path)
+        print("Image successfully loaded.")  # Debugging message
+
+        # Convert the image to a byte stream (JPEG format)
+        buffered = io.BytesIO()
+        image.save(buffered, format="JPEG")
+        print("Image successfully encoded to base64.")  # Debugging message
+
+        # Encode the image in base64
+        return base64.b64encode(buffered.getvalue()).decode("utf-8")
+    except Exception as e:
+        # If there is an error, print the error message
+        print(f"Error encoding the image: {e}")
+        return ""
+
+
+# Define the ObjectDetectionNode
 class ObjectDetectionNode:
     def run(self, image):
         # Load YOLOv5 model for object detection
@@ -11,30 +63,41 @@ class ObjectDetectionNode:
         results = model(image)
         objects = results.pandas().xyxy[0]  # bounding boxes and labels
         return objects[['name', 'xmin', 'ymin', 'xmax', 'ymax']]
-# Define the depth estimation node
+
+# Define the DepthEstimationNode with the fix
 import torch
+import torchvision.transforms as transforms
 from PIL import Image
-import numpy as np
 
 class DepthEstimationNode:
     def run(self, image_path):
         # Load MiDaS model for depth estimation
         model_type = "DPT_Large"  # or "MiDaS_small" for a smaller model
         midas = torch.hub.load("intel-isl/MiDaS", model_type)
-        midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
-        image = Image.open(image_path)
-        input_image = midas_transforms(image).unsqueeze(0)
+
+        # Image transformation pipeline (manual conversion to tensor)
+        transform = transforms.Compose([
+            transforms.Resize((384, 384)),  # Resize to match MiDaS input requirements
+            transforms.ToTensor(),         # Convert to tensor (automatically normalizes to [0, 1])
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize to ImageNet stats
+        ])
+
+        # Open the image and apply the transform
+        image = Image.open(image_path).convert("RGB")  # Ensure 3 channels
+        input_image = transform(image).unsqueeze(0)    # Add batch dimension (1, 3, H, W)
+        
+        # Perform depth estimation
         with torch.no_grad():
-            prediction = midas(input_image)
+            prediction = midas(input_image)  # Model expects input in (1, 3, H, W)
             prediction = torch.nn.functional.interpolate(
                 prediction.unsqueeze(1), size=image.size[::-1], mode="bicubic", align_corners=False
-            ).squeeze()
+            ).squeeze()  # Reshape to match the original image size
+
+        # Convert the prediction to a NumPy array
         depth_map = prediction.cpu().numpy()
         return depth_map
-import torch
-import clip
-from PIL import Image
 
+# Define the SceneAnalysisNode
 class SceneAnalysisNode:
     def run(self, image_path):
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -47,26 +110,73 @@ class SceneAnalysisNode:
             logits_per_image, logits_per_text = model(image, text)
             probs = logits_per_image.softmax(dim=-1).cpu().numpy()
         return probs
+
+# Define the GeminiAINode with API integration
+import requests
+from requests.exceptions import ConnectionError
+
+import base64
+from langchain.llms import GooglePalm
+from langchain.schema import HumanMessage
+
+from langchain.llms import GooglePalm
+
 class GeminiAINode:
-    def run(self, object_data, depth_map, scene_data):
-        # Aggregation logic
-        important_objects = object_data[object_data['name'].isin(['person', 'car', 'bicycle'])]
-        
-        navigation_info = {
-            'objects': important_objects,
-            'depth_map': depth_map.mean(),  # Overall depth
-            'scene': scene_data  # Scene probabilities
+    def run(self, object_data, depth_map, scene_data, image_path):
+        # Prepare the data for the Gemini API
+        data = {
+            'objects': object_data.to_dict(),
+            'depth_map': depth_map.tolist(),
+            'scene_data': scene_data.tolist(),
+            'image': image_path,  # The image path is provided here, not the image itself
         }
-        
-        if 'person' in important_objects['name'].values:
-            advice = "Caution: Person ahead. Keep right."
-        elif 'car' in important_objects['name'].values:
-            advice = "Caution: Car ahead. Move to the side."
-        else:
-            advice = "Path is clear. Proceed straight."
-        
-        return advice, navigation_info
-# Define the full LangGraph pipeline
+        json_data = json.dumps(data, indent=4)
+        file_path = "data/sample_data.txt"
+        with open(file_path, "w") as file:
+            file.write(json_data)
+
+        # Initialize the GooglePalm model via the LLM interface
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",  # Adjust the model version if necessary
+            api_key=GOOGLE_API_KEY,
+            temperature=0.5,  # Adjust the temperature based on your use case
+            max_tokens=500,   # Set maximum token limit if needed
+            max_retries=2,    # Adjust retries based on your needs
+        )
+
+        # Use the corrected encode_image function
+        image_data = encode_image(image_path)
+
+        if not image_data:
+            print("Error encoding the image.")
+            return None, None
+
+        # Prepare the message with both text and the base64-encoded image
+        message = HumanMessage(
+            content=[
+                {"type": "text", "text": "Describe directions for how you would get from one side of the room to the other, and point out key obstacles. Specify the exact depth and distance between objects. Assume you were speaking to a blind person and helping them navigate."},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{image_data}"},
+                },
+            ],
+        )
+
+        # Invoke the Gemini AI model and get a response using the invoke() method
+        try:
+            response = llm.invoke([message])
+
+            # Print the response content
+            if response and hasattr(response, 'content'):
+                print(response.content)
+            else:
+                print("Invalid response or content not available.")
+        except Exception as e:
+            print(f"Error invoking the Gemini AI model: {e}")
+            return None, None
+
+        return response.content
+
 class NavigationPipeline:
     def __init__(self):
         # Initialize each node
@@ -86,10 +196,11 @@ class NavigationPipeline:
         scene_data = self.scene_analysis_node.run(image_path)
         
         # Step 4: Aggregation and Advice from Gemini AI
-        advice, navigation_info = self.gemini_ai_node.run(objects, depth_map, scene_data)
+        advice, navigation_info = self.gemini_ai_node.run(objects, depth_map, scene_data, image_path)
         
         # Return final navigation advice
         return advice, navigation_info
+
 # Example usage
 def main(image_path):
     # Create the pipeline
@@ -104,6 +215,5 @@ def main(image_path):
 
 # Example image path
 image_path = 'test_image/maze.jpg'
-
 
 main(image_path)
