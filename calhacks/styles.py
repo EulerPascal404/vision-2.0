@@ -98,3 +98,26 @@ base_stylesheets = [
 base_style = {
     "font_family": "Inter",
 }
+
+# calhacks/styles.py
+
+# Primary color for headings and accents
+primary_color = "#2c3e50"  # Dark blue
+
+# Secondary color for subheadings or secondary text
+secondary_color = "#7f8c8d"  # Gray
+
+# Text color for regular content
+text_color = "#2d3436"  # Dark gray
+
+# Background color for card-like elements
+card_bg_color = "#ecf0f1"  # Light gray
+
+# Box shadow for cards
+box_shadow = "0 4px 6px rgba(0, 0, 0, 0.1)"
+
+# Accent color for buttons or highlights
+accent_color = "#e74c3c"  # Red
+
+# Border style for dividers or outlines
+border = "1px solid #bdc3c7"

@@ -179,9 +179,16 @@ def navbar() -> rx.Component:
     return rx.el.nav(
         rx.hstack(
             # The logo.
-            rx.color_mode_cond(
-                rx.image(src="/reflex_black.svg", height="1em"),
-                rx.image(src="/reflex_white.svg", height="1em"),
+            # rx.color_mode_cond(
+            #     rx.image(src="/reflex_black.svg"),
+            #     rx.image(src="/reflex_white.svg", height="1em"),
+            # ),
+            # rx.image(src="/glasses-svgrepo-com.svg"),
+            rx.text(
+                "METAEYE",
+                font_size="1.5em",
+                font_weight="bold",
+                color=styles.accent_text_color,  # Use your accent color or any color you prefer
             ),
             rx.spacer(),
             menu_button(),
