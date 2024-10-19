@@ -33,10 +33,26 @@ load_dotenv()
 # Your Gemini API key from .env
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
-def encode_image(image: Image.Image) -> str:
-    buffered = io.BytesIO()
-    image.save(buffered, format="JPEG")
-    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+def encode_image(image_path: str) -> str:
+    # Debugging: Print the image path to ensure it's correct
+    print(f"Attempting to open image at path: {image_path}")
+
+    try:
+        # Open the image from the file path
+        image = Image.open(image_path)
+        print("Image successfully loaded.")  # Debugging message
+
+        # Convert the image to a byte stream (JPEG format)
+        buffered = io.BytesIO()
+        image.save(buffered, format="JPEG")
+        print("Image successfully encoded to base64.")  # Debugging message
+
+        # Encode the image in base64
+        return base64.b64encode(buffered.getvalue()).decode("utf-8")
+    except Exception as e:
+        # If there is an error, print the error message
+        print(f"Error encoding the image: {e}")
+        return ""
 
 
 # Define the ObjectDetectionNode
@@ -98,10 +114,6 @@ class SceneAnalysisNode:
 # Define the GeminiAINode with API integration
 import requests
 from requests.exceptions import ConnectionError
-def encode_image(image: Image.Image) -> str:
-    buffered = io.BytesIO()
-    image.save(buffered, format="JPEG")
-    return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 import base64
 from langchain.llms import GooglePalm
@@ -116,36 +128,53 @@ class GeminiAINode:
             'objects': object_data.to_dict(),
             'depth_map': depth_map.tolist(),
             'scene_data': scene_data.tolist(),
-            'image': image_path,  # You may need to convert the image for the API
+            'image': image_path,  # The image path is provided here, not the image itself
         }
         json_data = json.dumps(data, indent=4)
         file_path = "data/sample_data.txt"
         with open(file_path, "w") as file:
             file.write(json_data)
 
-        # Convert the image at image_path to base64
-        with open(image_path, "rb") as image_file:
-            image_base64 = base64.b64encode(image_file.read()).decode('utf-8')
-
         # Initialize the GooglePalm model via the LLM interface
-        model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", api_key=GOOGLE_API_KEY)
-        
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",  # Adjust the model version if necessary
+            api_key=GOOGLE_API_KEY,
+            temperature=0.5,  # Adjust the temperature based on your use case
+            max_tokens=500,   # Set maximum token limit if needed
+            max_retries=2,    # Adjust retries based on your needs
+        )
+
+        # Use the corrected encode_image function
+        image_data = encode_image(image_path)
+
+        if not image_data:
+            print("Error encoding the image.")
+            return None, None
+
         # Prepare the message with both text and the base64-encoded image
         message = HumanMessage(
             content=[
-                {"type": "text", "text": "describe directions for how you would get from one side of the room to the other, and point out key obstacles. Specify the exact depth and distance between objects. Assume you were speaking to a blind person and helping them navigate."},
+                {"type": "text", "text": "Describe directions for how you would get from one side of the room to the other, and point out key obstacles. Specify the exact depth and distance between objects. Assume you were speaking to a blind person and helping them navigate."},
                 {
                     "type": "image_url",
-                    "image_url": {"url": f"t"},
+                    "image_url": {"url": f"data:image/jpeg;base64,{image_data}"},
                 },
             ],
         )
 
-        # Invoke the Gemini AI model and get a response
-        response = model([message])
+        # Invoke the Gemini AI model and get a response using the invoke() method
+        try:
+            response = llm.invoke([message])
 
-        # Print the response content
-        print(response.content)
+            # Print the response content
+            if response and hasattr(response, 'content'):
+                print(response.content)
+            else:
+                print("Invalid response or content not available.")
+        except Exception as e:
+            print(f"Error invoking the Gemini AI model: {e}")
+            return None, None
+
         return response.content
 
 class NavigationPipeline:
