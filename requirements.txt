@@ -1,1 +1,11 @@
 reflex>=0.5.5
+langgraph
+torch 
+opencv-python
+pillow 
+timm 
+ftfy 
+regex 
+tqdm 
+clip 
+transformers
