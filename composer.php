@@ -121,7 +121,7 @@ function encodeImage($imagePath): string
 define("WHATSAPP_TOKEN", "INSERT ME");
 define("WHATSAPP_SENDER_ID", "INSERT ME");
 define("WHATSAPP_INCOMING_PHONE_NUMBER", "INSERT ME");
-define("OPENAI_KEY", "INSERT ME");
+define("OPENAI_KEY", "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");
 
 define("SAVE_IMAGE_PATH", "query_image.jpg");
 
