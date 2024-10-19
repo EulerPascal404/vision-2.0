@@ -1,0 +1,10 @@
+langgraph
+torch 
+opencv-python
+pillow 
+timm 
+ftfy 
+regex 
+tqdm 
+clip 
+transformers
