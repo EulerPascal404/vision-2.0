@@ -22,7 +22,7 @@ def encode_image(image: Image.Image) -> str:
     image.save(buffered, format="JPEG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-image = Image.open('hotel_room.jpg')
+image = Image.open('test_image/hotel_room.jpg')
 
 # Download and encode the image
 image_data = encode_image(image)

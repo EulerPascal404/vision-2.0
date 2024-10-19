@@ -123,12 +123,11 @@ from langchain.llms import GooglePalm
 
 class GeminiAINode:
     def run(self, object_data, depth_map, scene_data, image_path):
-        # Prepare the data for the Gemini API
+        # Prepare the data for the Gemini API (if needed for context)
         data = {
             'objects': object_data.to_dict(),
             'depth_map': depth_map.tolist(),
             'scene_data': scene_data.tolist(),
-            'image': image_path,  # The image path is provided here, not the image itself
         }
         json_data = json.dumps(data, indent=4)
         file_path = "data/sample_data.txt"
@@ -144,31 +143,23 @@ class GeminiAINode:
             max_retries=2,    # Adjust retries based on your needs
         )
 
-        # Use the corrected encode_image function
-        image_data = encode_image(image_path)
-
-        if not image_data:
-            print("Error encoding the image.")
-            return None, None
-
-        # Prepare the message with both text and the base64-encoded image
+        # Prepare a simple text prompt without the image
         message = HumanMessage(
             content=[
-                {"type": "text", "text": "Describe directions for how you would get from one side of the room to the other, and point out key obstacles. Specify the exact depth and distance between objects. Assume you were speaking to a blind person and helping them navigate."},
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{image_data}"},
-                },
+                {"type": "text", "text": "Describe directions for how you would get from one side of the room to the other, and point out key obstacles. Specify the exact depth and distance between objects. Assume you were speaking to a blind person and helping them navigate."}
             ],
         )
 
         # Invoke the Gemini AI model and get a response using the invoke() method
-        try:
-            response = llm.invoke([message])
 
+        try:
+            print(3)
+            response = llm.invoke([message])
+            print(1)
             # Print the response content
             if response and hasattr(response, 'content'):
                 print(response.content)
+                print(2)
             else:
                 print("Invalid response or content not available.")
         except Exception as e:
