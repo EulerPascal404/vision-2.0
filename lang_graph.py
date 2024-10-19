@@ -1,6 +1,8 @@
 import langgraph as lg
 
 import torch
+import tarfile
+
 
 class ObjectDetectionNode:
     def run(self, image):
@@ -101,6 +103,7 @@ def main(image_path):
     print("Aggregated Information:", navigation_info)
 
 # Example image path
-image_path = 'test_image/maze.png'
+image_path = 'test_image/maze.jpg'
+
 
 main(image_path)
