@@ -315,7 +315,6 @@ def main(image_path, string_num, navigation_mode=True):
 
 
 # Example image path
-for i in range(1,5):
-    image_path = 'demo_images/demo_image_'+str(i)+'.jpeg'
-    main(image_path, str(i), navigation_mode=True)
+image_path = 'demo_images/hotel_20.png'
+main(image_path, str("hotel_20"), navigation_mode=True)
 
