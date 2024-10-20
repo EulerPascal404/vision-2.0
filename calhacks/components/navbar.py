@@ -197,10 +197,18 @@ def navbar() -> rx.Component:
             padding_y="1.25em",
             padding_x=["1em", "1em", "2em"],
         ),
-        display=["block", "block", "block", "block", "block", "none"],
-        position="sticky",
-        background_color=rx.color("gray", 1),
-        top="0px",
-        z_index="5",
-        border_bottom=styles.border,
+        # display=["block", "block", "block", "block", "block", "none"],
+        # position="sticky",
+        # background_color=rx.color("gray", 1),
+        # top="0px",
+        # z_index="5",
+        # border_bottom=styles.border,
+        style={
+            "position": "sticky",
+            "top": "0",
+            "z_index": "1000",
+            "backgroundColor": "rgba(255, 255, 255, 0.5)",  # Semi-transparent white background
+            "backdrop_filter": "blur(10px)",  # Optional: Adds a blur effect
+            "boxShadow": styles.box_shadow,
+        },
     )

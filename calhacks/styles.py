@@ -91,13 +91,13 @@ color_picker_style = {
 
 
 base_stylesheets = [
-    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+    "https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap",
     "styles.css",
 ]
 
-base_style = {
-    "font_family": "Inter",
-}
+# base_style = {
+#     "font_family": "Baloo 2",
+# }
 
 # calhacks/styles.py
 
@@ -121,3 +121,14 @@ accent_color = "#e74c3c"  # Red
 
 # Border style for dividers or outlines
 border = "1px solid #bdc3c7"
+
+# background_gradient = {
+#     "background": "linear-gradient(135deg, #1abc9c 0%, #3498db 100%)",  # Adjust colors and angle as desired
+# }
+
+base_style = {
+    # ... existing base styles ...
+    # Add this line to apply the gradient background
+    "background": "linear-gradient(135deg, #ffe0e0 0%, #f5eedc 100%)",
+    "font_family": "Baloo 2"
+}
