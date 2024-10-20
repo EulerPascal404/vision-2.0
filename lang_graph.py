@@ -279,9 +279,9 @@ def generate_voice_directions(advice):
         return None
 
 # Example usage
-def main(image_path, navigation_mode=True):
+def main(image_path, string_num, navigation_mode=True):
     # Create directory 'nav_data' if it doesn't exist
-    output_dir = "nav_data"
+    output_dir = "nav_data_" + string_num
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -315,5 +315,5 @@ def main(image_path, navigation_mode=True):
 
 
 # Example image path
-image_path = 'test_image/hotel_room.jpg'
-main(image_path, navigation_mode=True)
+image_path = 'demo_images/demo_image_5.jpeg'
+main(image_path, "5", navigation_mode=True)
