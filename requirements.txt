@@ -55,3 +55,4 @@ langgraph-sdk==0.1.33
 langsmith==0.1.136
 MarkupSafe==3.0.2
 marshm
+cartesia
