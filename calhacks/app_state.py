@@ -2,24 +2,24 @@ import reflex as rx
 # import aiohttp 
 from typing import List
 
-from cartesia import Cartesia
-import os
-import subprocess
-import ffmpeg
+# from cartesia import Cartesia
+# import os
+# import subprocess
+# import ffmpeg
 
-client = Cartesia(api_key=os.environ.get("CARTESIA_API_KEY"))
+# client = Cartesia(api_key=os.environ.get("CARTESIA_API_KEY"))
 
-voice_id = "a0e99841-438c-4a64-b679-ae501e7d6091" 
-model_id = "sonic-english"
-transcript = "Hello! Welcome to Cartesia"
+# voice_id = "a0e99841-438c-4a64-b679-ae501e7d6091" 
+# model_id = "sonic-english"
+# transcript = "Hello! Welcome to Cartesia"
 
-output_format = {
-    "container": "raw",
-    "encoding": "pcm_f32le",
-    "sample_rate": 44100,
-}
+# output_format = {
+#     "container": "raw",
+#     "encoding": "pcm_f32le",
+#     "sample_rate": 44100,
+# }
 
-ws = client.tts.websocket()
+# ws = client.tts.websocket()
 
 # f = open("sonic.pcm", "wb")
 
