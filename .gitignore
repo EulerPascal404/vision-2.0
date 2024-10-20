@@ -8,5 +8,3 @@
 __pycache__/
 assets/external/
 venv/
-php_commands/vendor/
-meta_glasses/lib
