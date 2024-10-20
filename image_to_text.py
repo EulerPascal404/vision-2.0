@@ -26,7 +26,6 @@ image = Image.open('test_image/hotel_room.jpg')
 
 # Download and encode the image
 image_data = encode_image(image)
-
 # Create a message with the image
 message = HumanMessage(
     content=[

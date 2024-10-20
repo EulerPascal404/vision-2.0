@@ -9,3 +9,5 @@ regex
 tqdm 
 clip 
 transformers
+googleapis-common-protos==1.56.2 
+protobuf==3.20.3
