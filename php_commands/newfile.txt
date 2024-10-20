@@ -1,0 +1,1 @@
+{"url":"https:\/\/lookaside.fbsbx.com\/whatsapp_business\/attachments\/?mid=436881049425951&ext=1729405181&hash=ATtW35wkiQviRBOk1HI3cg4G5OBWyYsxfshBpzbMwBoLjg","mime_type":"image\/jpeg","sha256":"d1b795fcebb2ff4a55c00298189cd8c95beacfc114c00197ce7ed0bb91f82fd0","file_size":154537,"id":"436881049425951","messaging_product":"whatsapp"}
