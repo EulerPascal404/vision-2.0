@@ -1,7 +1,7 @@
 import torch
-import torch.nn.functional as F  # Import torch.nn.functional as F
+import torch.nn.functional as F
 import torchvision.transforms as transforms
-from PIL import Image
+from PIL import Image, ImageDraw
 import base64
 import io
 import clip
@@ -89,7 +89,13 @@ class GeminiAINode:
             object_depth_info.append({
                 "name": obj['name'],
                 "depth": round(depth_value, 2),
-                "location": f"centered at ({int(x_center)}, {int(y_center)})"
+                "location": f"centered at ({int(x_center)}, {int(y_center)})",
+                "x_center": x_center,
+                "y_center": y_center,
+                "xmin": obj['xmin'],
+                "ymin": obj['ymin'],
+                "xmax": obj['xmax'],
+                "ymax": obj['ymax']
             })
         
         return object_depth_info
@@ -130,12 +136,12 @@ class GeminiAINode:
         try:
             response = llm.invoke([message])
             if response and hasattr(response, 'content'):
-                return response.content
+                return response.content, object_depth_info
             else:
                 print("Invalid response or content not available.")
         except Exception as e:
             print(f"Error invoking the Gemini AI model: {e}")
-            return None
+            return None, None
 
 # Navigation Pipeline
 class NavigationPipeline:
@@ -149,14 +155,55 @@ class NavigationPipeline:
         objects = self.object_detection_node.run(image_path)
         depth_map = self.depth_estimation_node.run(image_path)
         scene_data = self.scene_analysis_node.run(image_path)
-        advice = self.gemini_ai_node.run(objects, depth_map, scene_data, image_path)
-        return advice
+        advice, object_depth_info = self.gemini_ai_node.run(objects, depth_map, scene_data, image_path)
+        return advice, object_depth_info
+
+# Function to annotate image with bounding boxes and navigation arrows
+def annotate_image_with_directions(image_path, object_depth_info, advice):
+    # Open the image to annotate
+    image = Image.open(image_path)
+    draw = ImageDraw.Draw(image)
+
+    # Add bounding boxes for each detected object
+    for obj in object_depth_info:
+        draw.rectangle(
+            [(obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax'])], outline="green", width=3
+        )
+        draw.text((obj['xmin'], obj['ymin'] - 10), obj['name'], fill="green")
+
+    # Basic logic to add arrows for navigation based on advice
+    # For example, if advice contains directions like "move left", "move straight"
+    current_position = (image.size[0] // 2, image.size[1] - 50)  # Starting at the bottom-center of the image
+    if "left" in advice.lower():
+        target_position = (current_position[0] - 100, current_position[1] - 50)
+    elif "right" in advice.lower():
+        target_position = (current_position[0] + 100, current_position[1] - 50)
+    elif "straight" in advice.lower() or "forward" in advice.lower():
+        target_position = (current_position[0], current_position[1] - 150)
+    else:
+        target_position = current_position  # Default case: no movement
+
+    # Draw an arrow representing the direction of movement
+    draw.line([current_position, target_position], fill="red", width=5)
+    draw.line([target_position, (target_position[0] - 10, target_position[1] + 10)], fill="red", width=5)
+    draw.line([target_position, (target_position[0] + 10, target_position[1] + 10)], fill="red", width=5)
+
+    # Save the annotated image to a new file or return it
+    annotated_image_path = "test_image/annotated_" + os.path.basename(image_path)
+    image.save(annotated_image_path)
+    return annotated_image_path
 
 # Example usage
 def main(image_path):
     pipeline = NavigationPipeline()
-    advice = pipeline.process(image_path)
+    advice, object_depth_info = pipeline.process(image_path)
+
+    # Output the navigation advice
     print("Navigation Advice:", advice)
+
+    # Annotate the image with bounding boxes and arrows
+    annotated_image = annotate_image_with_directions(image_path, object_depth_info, advice)
+    print("Annotated image saved to:", annotated_image)
 
 # Example image path
 image_path = 'test_image/hotel_room.jpg'
