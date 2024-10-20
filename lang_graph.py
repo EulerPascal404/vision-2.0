@@ -244,7 +244,7 @@ def annotate_image_with_directions_and_voice(image_path, object_depth_info, advi
         draw.text((obj['xmin'], obj['ymin'] - 10), obj['name'], fill="green", font=font)
 
     # Trace the complete path from the navigation advice
-    trace_navigation_path(advice, draw, image.size, object_depth_info)
+    # trace_navigation_path(advice, draw, image.size, object_depth_info)
 
     # Save the annotated image
     annotated_image_path = "test_image/annotated_" + os.path.basename(image_path)
@@ -315,5 +315,7 @@ def main(image_path, string_num, navigation_mode=True):
 
 
 # Example image path
-image_path = 'demo_images/demo_image_5.jpeg'
-main(image_path, "5", navigation_mode=True)
+for i in range(1,5):
+    image_path = 'demo_images/demo_image_'+str(i)+'.jpeg'
+    main(image_path, str(i), navigation_mode=True)
+

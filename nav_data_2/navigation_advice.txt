@@ -1,1 +1,27 @@
-Okay, you are standing at the center of the sidewalk, facing forward. To your left, 11.53 feet away, you will find a person.  To your right, 22.93 feet away, you will find a person.  In front of you, 22.56 feet away, you will find a person.  You can safely walk forward, 22.56 feet, then turn left and walk 22.93 feet to reach the other side of the sidewalk.  Let me know if you have any questions. 
+Okay, to get to the other side of the street, you'll need to be careful. You're starting from the center of the street, and there are a few people and objects to navigate around. 
+
+First, you'll feel a bicycle to your left, about 5 feet and 4 inches away. It's about 5 feet and 4 inches deep.  
+
+Then, you'll feel a person to your left, about 4 feet and 9 inches away. They are about 4 feet and 9 inches deep.
+
+Next, you'll feel a person to your left, about 5 feet and 3 inches away. They are about 5 feet and 3 inches deep.
+
+After that, you'll feel a person to your right, about 11 feet and 6 inches away. They are about 11 feet and 6 inches deep.
+
+You'll then feel a person to your right, about 12 feet and 9 inches away. They are about 12 feet and 9 inches deep.
+
+Then, you'll feel a person to your right, about 9 feet and 9 inches away. They are about 9 feet and 9 inches deep.
+
+You'll then feel a person to your right, about 8 feet and 2 inches away. They are about 8 feet and 2 inches deep.
+
+Next, you'll feel a person to your right, about 10 feet and 4 inches away. They are about 10 feet and 4 inches deep.
+
+After that, you'll feel a backpack to your right, about 22 feet and 11 inches away. It's about 22 feet and 11 inches deep.
+
+You'll then feel a person to your right, about 22 feet and 9 inches away. They are about 22 feet and 9 inches deep.
+
+Then, you'll feel a person to your right, about 22 feet and 8 inches away. They are about 22 feet and 8 inches deep.
+
+You'll then feel a person to your left, about 12 feet and 3 inches away. They are about 12 feet and 3 inches deep.
+
+You'll then feel a person to your left, about 5 feet and 5

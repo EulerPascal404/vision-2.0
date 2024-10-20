@@ -1,11 +1,1 @@
-Okay, you are starting at the chair. It's about 5 feet deep and centered at 380, 569. To get to the other side of the room, you'll need to move forward and to the right. 
-
-First, you will need to move forward about 5 feet. You will feel a couch on your right. It's about 16 feet deep and centered at 310, 825. You can use this couch as a guide.
-
-Next, you will need to move to the right. You will feel a chair on your right. It's about 16 feet deep and centered at 352, 827. You can use this chair as a guide.
-
-Now you will need to move forward about 10 feet. You will feel a bed on your right. It's about 10 feet deep and centered at 582, 603. You can use this bed as a guide.
-
-You will then need to move to the right about 10 feet. You will feel a bed on your right. It's about 20 feet deep and centered at 985, 705. You can use this bed as a guide.
-
-You have now reached the other side of the room. 
+Okay, I can help you navigate this room. To get to the other side, you'll need to move forward about 10 feet. You'll feel a chair on your right side, about 5 feet away, and then a couch to your left, also about 5 feet away.  Keep going forward and you'll run into a bed about 10 feet ahead.  You can then walk to the right side of the bed to continue on your journey.  There is another bed about 20 feet to your right.  You can continue forward and you'll reach the other side of the room. 
